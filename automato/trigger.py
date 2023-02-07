@@ -120,5 +120,14 @@ class ConditionalTrigger(Trigger):
         return self._endpoints[endpoint].getState(key)
 
     def _evaluate(self, action: str) -> bool:
-        return all(self._parser.parse_string(str(s)) for s in self._instances[action]['args']['when'])
+        logging.debug(f"{self._instances[action]['args']['when']}")
+
+        results = []
+
+        for s in self._instances[action]['args']['when']:
+            r = self._parser.parse_string(str(s))[0]
+            logging.debug(f'Condition "{s}" evaluated to "{r}"')
+            results.append(r)
+
+        return all(results)
 

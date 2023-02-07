@@ -41,11 +41,29 @@ def main():
 
 
     # TODO should we do that in Endpoint.__init__()?
+    # TODO We also need better connectivity handling, eg. auto reconnect
     for k in endpoints:
         endpoints[k].connectTransport()
 
-    for act_key in action_config:
-        actions[act_key].execute()
+    looptime = 5 # TODO
+    while True:
+        starttime = time.time()
 
-    for act_key in action_config:
-        actions[act_key].execute()
+        for act_key in action_config:
+            actions[act_key].execute()
+
+        elapsed = time.time() - starttime
+        wait = max(0, looptime - elapsed)
+        logging.debug(f'Loop took {elapsed:.2f}s. Waiting {wait:.2f}s before next run.')
+        if wait <= 0.1 * looptime:
+            logging.warn(f'System seems overloaded. Actions did not run in specified looptime {looptime}s.')
+
+        time.sleep(max(0, looptime - elapsed))
+
+
+
+    #for act_key in action_config:
+    #    actions[act_key].execute()
+
+    #for act_key in action_config:
+    #    actions[act_key].execute()
