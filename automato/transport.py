@@ -57,13 +57,14 @@ class Transport:
 class SshTransport(Transport):
     CONNECTION=HOLD
 
-    def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None):
+    def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None, allow_agent=False):
         super().__init__()
         self._hostname = hostname
         self._port = port
         self._username = username
         self._password = password
         self._id_file = id_file
+        self._allow_agent = allow_agent
 
         self._client = None
 
@@ -72,7 +73,7 @@ class SshTransport(Transport):
 
         # TODO known hosts
         self._client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy)
-        self._client.connect(self._hostname, port=self._port, username=self._username, password=self._password, key_filename=None, allow_agent=True)
+        self._client.connect(self._hostname, port=self._port, username=self._username, password=self._password, key_filename=self._id_file, allow_agent=self._allow_agent)
 
         self._connected = True
 

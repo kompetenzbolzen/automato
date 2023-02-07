@@ -4,6 +4,7 @@ host1:
       class: automato.transport.SshTransport
       hostname: 'localhost'
       username: 'jonas'
+      allow_agent: True
   commands:
     notify:
       class: automato.command.NotifyCommand
