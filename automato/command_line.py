@@ -49,23 +49,3 @@ def main():
 
     for act_key in action_config:
         actions[act_key].execute()
-
-
-#print(endpoints['host1'].getState('user.jonas'))
-#print(endpoints['host1'].getState('user.jonas'))
-#
-#time.sleep(31)
-#print(endpoints['host1'].getState('user.jonas'))
-
-#endpoints['host1'].executeCommand('notify', msg='moinsen')
-
-#tr = transport.SshTransport('localhost', username='jonas')
-#tr.connect()
-#
-#noti = command.NotifyCommand(tr)
-#noti.execute('OwO')
-#
-#sta = state.UserState(tr)
-#sta.collect()
-#
-#tr.disconnect()

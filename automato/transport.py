@@ -3,15 +3,41 @@ import paramiko
 HOLD = 1
 THROWAWAY = 2
 
-# Abstract classes to implement
+'''
+Implementations of Transport:
+
+CAN set:
+  CONNECTION
+    - THROWAWAY signals that every invocation creates a new connection and
+      and thus connection management is not needed
+    - HOLD indicates a connection is established and held for multiple commands,
+      requiring initial connection and final disconnection
+
+MUST implement:
+    connect(self), disconnect(self)
+      when CONNECTION is set to HOLD
+      make sure to set self._connected accordingly.
+    check(self)
+      when CONNECTION is set to THROWAWAY
+
+    Functions to use the Transport
+      it is advisable to specify the used Transport as a type hint in
+      the command/state using it to trigger errors on startup,
+      rather than at runtime in case of misconfiguration.
+
+CAN implement:
+  __init__(self, <other settings you might need>)
+  isConnected(self) -> bool
+
+SHOULDNT implement:
+  ./.
+'''
 class Transport:
-    NAME = 'BASE'
     CONNECTION = HOLD
     #CONNECTION = THROWAWAY
 
     def __init__(self):
         self._connected = False
-        raise NotImplemented
 
     # Connects to the transport, if CONNECTION == HOLD
     def connect(self):
@@ -29,17 +55,16 @@ class Transport:
         return self._connected
 
 class SshTransport(Transport):
-    NAME='SSH'
     CONNECTION=HOLD
 
     def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None):
+        super().__init__()
         self._hostname = hostname
         self._port = port
         self._username = username
         self._password = password
         self._id_file = id_file
 
-        self._connected = False
         self._client = None
 
     def connect(self):
