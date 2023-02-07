@@ -1,0 +1,10 @@
+conditional:
+  class: trigger.ConditionalTrigger
+
+#mqtt:
+#  class: trigger.Mqtt
+#  server: asdf
+#  user: OwO
+#
+#timer:
+#  class: trigger.Timer

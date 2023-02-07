@@ -1,0 +1,13 @@
+---
+send-hello:
+  trigger:
+    - conditional:
+        interval: 30
+        when:
+          - host1.user.jonas > 0
+          - True
+  then:
+    - host1.notify:
+        msg: Hello
+    - host1.notify:
+        msg: World!
