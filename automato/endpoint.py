@@ -1,5 +1,6 @@
 import logging
-import transport
+
+from . import transport
 
 def import_class(cl):
     d = cl.rfind(".")

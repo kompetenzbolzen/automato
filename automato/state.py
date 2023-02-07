@@ -1,7 +1,7 @@
 import time
 import logging
 
-import transport
+from . import transport
 
 '''
 Implementations of State:

@@ -1,4 +1,4 @@
-import transport
+from . import transport
 
 class Command:
     def __init__(self, transport: transport.Transport):

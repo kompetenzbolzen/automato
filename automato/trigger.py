@@ -3,8 +3,8 @@ from pyparsing import alphanums, alphas, printables, pyparsing_common, pyparsing
 import logging
 import time
 
-import endpoint
-import misc
+from . import endpoint
+from . import misc
 
 '''
 Implementations of Trigger:

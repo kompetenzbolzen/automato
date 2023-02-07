@@ -1,8 +1,8 @@
 from typing import Dict
 import logging
 
-import endpoint
-import trigger
+from . import endpoint
+from . import trigger
 
 class Action:
     # TODO: Cooldown, wait fot state change, repeat, etc?

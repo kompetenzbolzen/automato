@@ -1,15 +1,15 @@
 host1:
   transports:
     ssh:
-      class: transport.SshTransport
+      class: automato.transport.SshTransport
       hostname: 'localhost'
       username: 'jonas'
   commands:
     notify:
-      class: command.NotifyCommand
+      class: automato.command.NotifyCommand
       transport: ssh
   states:
     user:
-      class: state.UserSessionState
+      class: automato.state.UserSessionState
       transport: ssh
       ttl: 30

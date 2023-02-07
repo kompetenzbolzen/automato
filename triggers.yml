@@ -1,5 +1,5 @@
 conditional:
-  class: trigger.ConditionalTrigger
+  class: automato.trigger.ConditionalTrigger
 
 #mqtt:
 #  class: trigger.Mqtt
