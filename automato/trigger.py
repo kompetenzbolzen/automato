@@ -1,7 +1,8 @@
 from typing import Dict
 from pyparsing import alphanums, alphas, printables, pyparsing_common, pyparsing_common, Word, infix_notation, CaselessKeyword, opAssoc, ParserElement
-import logging
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 from . import endpoint
 from . import misc
@@ -40,7 +41,7 @@ class Trigger:
     def addInstance(self, action: str, interval: int=30, **kwargs):
         self._instances[action] = {'lastupdate':0,'interval':interval,'last':False,'args':kwargs}
         self._addInstance(action)
-        logging.debug(f'Trigger: Action "{action}" registered.')
+        logger.debug(f'Trigger: Action "{action}" registered.')
 
     def _evaluate(self, action: str) -> bool:
         raise NotImplemented
@@ -50,11 +51,11 @@ class Trigger:
 
     def evaluate(self, action: str) -> bool:
         if action not in self._instances:
-            logging.error(f'Trigger: Action "{action}" was not found. Evaluating to False.')
+            logger.error(f'Trigger: Action "{action}" was not found. Evaluating to False.')
             return False
 
         if self._shouldReevaluate(action):
-            logging.debug(f'Re-evaluating trigger condition for action "{action}"')
+            logger.debug(f'Re-evaluating trigger condition for action "{action}"')
             result =  self._evaluate(action)
 
             self._instances[action]['last'] = result
@@ -110,23 +111,23 @@ class ConditionalTrigger(Trigger):
             )
 
     def _parseVariable(self, var):
-        logging.debug(f'Looking up variable "{var[0]}"')
+        logger.debug(f'Looking up variable "{var[0]}"')
         endpoint, key = var[0].split('.',1)
 
         if not endpoint in self._endpoints:
-            logging.error(f'Parser: Endpoint "{endpoint}" not found')
+            logger.error(f'Parser: Endpoint "{endpoint}" not found')
             return None
 
         return self._endpoints[endpoint].getState(key)
 
     def _evaluate(self, action: str) -> bool:
-        logging.debug(f"{self._instances[action]['args']['when']}")
+        logger.debug(f"{self._instances[action]['args']['when']}")
 
         results = []
 
         for s in self._instances[action]['args']['when']:
             r = self._parser.parse_string(str(s))[0]
-            logging.debug(f'Condition "{s}" evaluated to "{r}"')
+            logger.debug(f'Condition "{s}" evaluated to "{r}"')
             results.append(r)
 
         return all(results)

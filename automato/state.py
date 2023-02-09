@@ -1,5 +1,6 @@
 import time
 import logging
+logger = logging.getLogger(__name__)
 
 from . import transport
 
@@ -37,7 +38,7 @@ class State:
 
     def _get(self, key: str):
         if key not in self._data:
-            logging.error(f'Data key {key} was not found.')
+            logger.error(f'Data key {key} was not found.')
             return None
 
         return self._data[key]
@@ -47,10 +48,10 @@ class State:
 
     def get(self, key: str):
         if self._shouldCollect():
-            logging.debug(f'Cached value for "{key}" is too old. refreshing.')
+            logger.debug(f'Cached value for "{key}" is too old. refreshing.')
             self.collect()
         else:
-            logging.debug(f'Using cached value for "{key}".')
+            logger.debug(f'Using cached value for "{key}".')
 
 
         return self._get(key)
@@ -83,7 +84,7 @@ class UserSessionState(State):
         for l in lines:
             name, _ = l.split(' ', 1)
 
-            logging.debug(f'Found user session {name}')
+            logger.debug(f'Found user session {name}')
 
             if name not in self._data:
                 self._data[name] = 0

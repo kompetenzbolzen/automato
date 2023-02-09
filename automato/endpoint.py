@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger(__name__)
 
 from . import transport
 
@@ -18,7 +19,7 @@ class Endpoint:
         # sweet mother of jesus, you are ugly
         for tp_key in config['transports']:
             tp_cfg = config['transports'][tp_key]
-            logging.debug(f'loading transport "{tp_key}"')
+            logger.debug(f'loading transport "{tp_key}"')
 
             # TODO Handle failure
             tp_class = import_class(tp_cfg['class'])
@@ -28,7 +29,7 @@ class Endpoint:
 
         for cmd_key in config['commands']:
             cmd_cfg = config['commands'][cmd_key]
-            logging.debug(f'loading command "{cmd_key}"')
+            logger.debug(f'loading command "{cmd_key}"')
 
             # TODO Handle failure
             cmd_class = import_class(cmd_cfg['class'])
@@ -36,7 +37,7 @@ class Endpoint:
 
             if cmd_cfg['transport'] not in transports:
                 # TODO should we be lenient with errors?
-                logging.error(f'transport "{cmd_cfg["transport"]}" for command "{cmd_key}" was not found.')
+                logger.error(f'transport "{cmd_cfg["transport"]}" for command "{cmd_key}" was not found.')
                 continue
 
             tp = transports[cmd_cfg['transport']]
@@ -47,7 +48,7 @@ class Endpoint:
         # you look familiar
         for stt_key in config['states']:
             stt_cfg = config['states'][stt_key]
-            logging.debug(f'loading state "{stt_key}"')
+            logger.debug(f'loading state "{stt_key}"')
 
             # TODO Handle failure
             stt_class = import_class(stt_cfg['class'])
@@ -55,7 +56,7 @@ class Endpoint:
 
             if stt_cfg['transport'] not in transports:
                 # TODO should we be lenient with errors?
-                logging.error(f'transport "{stt_cfg["transport"]}" for command "{stt_key}" was not found.')
+                logger.error(f'transport "{stt_cfg["transport"]}" for command "{stt_key}" was not found.')
                 continue
 
             tp = transports[stt_cfg['transport']]
@@ -78,7 +79,7 @@ class Endpoint:
             elif self._transports[k].CONNECTION == transport.THROWAWAY:
                 self._transports[k].check()
             else:
-                logging.error(f'"{self._transports[k].CONNECTION}" is an unknown connection type in transport "{k}"')
+                logger.error(f'"{self._transports[k].CONNECTION}" is an unknown connection type in transport "{k}"')
 
     # forces a recollect of all states. should not be needed, states should
     # handle that themselves via TTL
@@ -93,7 +94,7 @@ class Endpoint:
         state, key = state_key.split('.', 1)
 
         if state not in self._states:
-            logging.error(f'State "{state}" was not found for "{self._name}"')
+            logger.error(f'State "{state}" was not found for "{self._name}"')
             return None
 
         return self._states[state].get(key)

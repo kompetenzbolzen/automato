@@ -8,7 +8,10 @@ import time
 from automato import transport, state, command, endpoint, trigger, misc, action
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s | %(levelname)s | %(name)s - %(message)s',
+                        datefmt='%c')
+
     logging.getLogger('paramiko').setLevel(logging.WARNING)
 
     # Use a TypeDict here
@@ -45,6 +48,8 @@ def main():
     for k in endpoints:
         endpoints[k].connectTransport()
 
+    logging.info('Successfully initialized!')
+
     looptime = 5 # TODO
     while True:
         starttime = time.time()
@@ -60,10 +65,3 @@ def main():
 
         time.sleep(max(0, looptime - elapsed))
 
-
-
-    #for act_key in action_config:
-    #    actions[act_key].execute()
-
-    #for act_key in action_config:
-    #    actions[act_key].execute()
