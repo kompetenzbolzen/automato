@@ -90,3 +90,41 @@ class UserSessionState(State):
                 self._data[name] = 0
 
             self._data[name] += 1
+
+class LinuxMemoryState(State):
+    def __init__(self, transport: transport.SshTransport, ttl: int = 60):
+        super().__init__(transport, ttl)
+
+        # this is not needed. it's here to shut up pylint
+        self._transport = transport
+
+    def _collect(self):
+        mem_data = self._transport.execHandleStderror('cat /proc/meminfo').decode('utf-8')
+
+        self._data['mem'] = {}
+        for l in mem_data.splitlines():
+            arr = l.split()
+            key = arr[0].strip(':')
+            val = arr[1]
+
+            self._data['mem'][key] = val
+
+            logger.debug(f'Memory: {key} = {val}')
+
+class LinuxLoadState(State):
+    def __init__(self, transport: transport.SshTransport, ttl: int = 30):
+        super().__init__(transport, ttl)
+
+        # this is not needed. it's here to shut up pylint
+        self._transport = transport
+
+    def _collect(self):
+        load_raw = self._transport.execHandleStderror('cat /proc/loadavg').decode('utf-8')
+
+        data = load_raw.split(None,4)
+
+        self._data = {}
+
+        self._data['1'] = data[0]
+        self._data['5'] = data[1]
+        self._data['15'] = data[2]
