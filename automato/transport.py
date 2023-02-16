@@ -1,4 +1,7 @@
 import paramiko
+import logging
+
+logger = logging.getLogger(__name__)
 
 HOLD = 1
 THROWAWAY = 2
@@ -66,6 +69,8 @@ class SshTransport(Transport):
         self._id_file = id_file
         self._allow_agent = allow_agent
 
+        self._connected = False
+
         self._client = None
 
     def connect(self):
@@ -73,13 +78,18 @@ class SshTransport(Transport):
 
         # TODO known hosts
         self._client.set_missing_host_key_policy(paramiko.client.AutoAddPolicy)
-        self._client.connect(self._hostname, port=self._port, username=self._username, password=self._password, key_filename=self._id_file, allow_agent=self._allow_agent)
+        try:
+            self._client.connect(self._hostname, port=self._port, username=self._username, password=self._password, key_filename=self._id_file, allow_agent=self._allow_agent)
+            self._connected = True
+        except paramiko.ssh_exception.NoValidConnectionsError as e:
+            logger.error(f'Failed to connect to {self._hostname}: {e.errors} ')
 
-        self._connected = True
 
     # return(str: stdout, str: stderr, int: retcode)
     def exec(self, command: str):
         if not self._connected:
+            # TODO we want a bit smarted connection logic
+            logger.error('SSH not connected')
             raise Exception('Not connected')
 
         output = self._client.exec_command(command, timeout=5)
@@ -91,6 +101,7 @@ class SshTransport(Transport):
         out = self.exec(command)
 
         if out[2] != 0:
+            logger.error(f'Command returned error {out[2]}: {out[1]}')
             raise Exception(f'Command returned error {out[2]}: {out[1]}')
 
         return out[0]
