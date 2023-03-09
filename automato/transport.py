@@ -1,6 +1,8 @@
 import paramiko
 import logging
 
+from typing import Union
+
 logger = logging.getLogger(__name__)
 
 HOLD = 1
@@ -57,10 +59,29 @@ class Transport:
     def isConnected(self) -> bool:
         return self._connected
 
+'''
+MetaDataTransport holds any data passed to it.
+It does not establish any connection and is only used
+to store metadata that may be used by commands that do not
+require a connection, such as Wake on Lan.
+'''
+class MetaDataTransport(Transport):
+    CONNECTION=THROWAWAY
+
+    def __init__(self, **kwargs):
+        self._metadata = kwargs
+
+    def __getattr__(self, attr):
+        return self._metadata[attr]
+
+    def check(self):
+        return True
+
+
 class SshTransport(Transport):
     CONNECTION=HOLD
 
-    def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None, allow_agent=False):
+    def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None, allow_agent = False):
         super().__init__()
         self._hostname = hostname
         self._port = port

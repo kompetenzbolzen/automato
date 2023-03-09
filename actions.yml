@@ -11,3 +11,4 @@ send-hello:
         msg: Hello
     - host1.notify:
         msg: World!
+    - host1.wol: {}
