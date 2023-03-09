@@ -40,6 +40,10 @@ but still inherit the globally set ones.
 
 An *If-This-Then-That* style set of *triggers* and *commands*.
 If all *triggers* are in a triggered state, the commands are executed.
+If `repeat` is `False`, the evaluation must cycle through `False` to run again.
+`cooldown` specifies the time in seconds the action will wait after running again,
+even if conditions are met.
+Both `repeat` and `cooldown` are optional and their defaults are `True` and `0`.
 
 
 ## Configuration
@@ -75,6 +79,8 @@ conditional:
 `actions.yml`
 ```yaml
 send-hello:
+  repeat: False
+  cooldown: 30
   trigger:
     - conditional:
         interval: 30
