@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
 
-import yaml
-import json
 import logging
 import time
+import yaml
 
-from automato import transport, state, command, endpoint, trigger, misc, action
+from automato import endpoint, misc, action
 
-def main():
+def load_yaml(path : str):
+    # Use a TypeDict here
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
+
+def setup():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s | %(levelname)s | %(name)s - %(message)s',
                         datefmt='%c')
 
     logging.getLogger('paramiko').setLevel(logging.WARNING)
 
-    # Use a TypeDict here
-    with open('endpoints.yml', 'r') as f:
-        endpoint_config = yaml.safe_load(f)
-
-    with open('triggers.yml', 'r') as f:
-        trigger_config = yaml.safe_load(f)
-
-    with open('actions.yml', 'r') as f:
-        action_config = yaml.safe_load(f)
+    endpoint_config = load_yaml('endpoints.yml')
+    trigger_config = load_yaml('triggers.yml')
+    action_config = load_yaml('actions.yml')
 
     endpoints = {}
     for ep_key in endpoint_config:
@@ -48,13 +46,16 @@ def main():
     for k in endpoints:
         endpoints[k].connectTransport()
 
-    logging.info('Successfully initialized!')
+    return actions
+
+def main():
+    actions = setup()
 
     looptime = 5 # TODO
     while True:
         starttime = time.time()
 
-        for act_key in action_config:
+        for act_key in actions:
             actions[act_key].execute()
 
         elapsed = time.time() - starttime
@@ -64,4 +65,3 @@ def main():
             logging.warn(f'System seems overloaded. Actions did not run in specified looptime {looptime}s.')
 
         time.sleep(max(0, looptime - elapsed))
-
