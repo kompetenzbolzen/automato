@@ -59,7 +59,7 @@ automato is configured in three `yml`-files
 host1:
   info:
     hostname: 'localhost'
-    mac:00:00:00:00:00
+    mac: '00:00:00:00:00'
   transports:
     ssh:
       class: automato.transport.SshTransport
