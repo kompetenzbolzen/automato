@@ -31,18 +31,23 @@ MUST implement:
       rather than at runtime in case of misconfiguration.
 
 CAN implement:
-  __init__(self, <other settings you might need>)
+  _init(self, <other settings you might need>)
   isConnected(self) -> bool
 
 SHOULDNT implement:
-  ./.
+  __init__(self, endpoint_info: dict, **kwargs)
 '''
 class Transport:
     CONNECTION = HOLD
     #CONNECTION = THROWAWAY
 
-    def __init__(self):
+    def __init__(self, endpoint_info: dict, **kwargs):
+        self._endpoint_info = endpoint_info
         self._connected = False
+        self._init(**kwargs)
+
+    def _init(self):
+        pass
 
     # Connects to the transport, if CONNECTION == HOLD
     def connect(self):
@@ -68,7 +73,7 @@ require a connection, such as Wake on Lan.
 class MetaDataTransport(Transport):
     CONNECTION=THROWAWAY
 
-    def __init__(self, **kwargs):
+    def _init(self, **kwargs):
         self._metadata = kwargs
 
     def __getattr__(self, attr):
@@ -81,16 +86,13 @@ class MetaDataTransport(Transport):
 class SshTransport(Transport):
     CONNECTION=HOLD
 
-    def __init__(self, hostname: str, port=22,  username='root', password = None, id_file = None, allow_agent = False):
-        super().__init__()
+    def _init(self, hostname: str, port=22,  username='root', password = None, id_file = None, allow_agent = False):
         self._hostname = hostname
         self._port = port
         self._username = username
         self._password = password
         self._id_file = id_file
         self._allow_agent = allow_agent
-
-        self._connected = False
 
         self._client = None
 

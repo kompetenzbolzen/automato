@@ -12,10 +12,12 @@ MUST implement:
 
 CAN implement:
   _get(self, key: str)
+  init(self, [transport], <other options you might need>)
 
 SHOULDNT implement:
   get(self, key)
   collect(self)
+  __init__(self, endpoint_info: dict, ttl: int = 30, **kwargs)
 
 Data is stored in self._data as a dictionary.
 By default, _get(key) retrieves the returns self._data[key].
@@ -26,12 +28,18 @@ the self._data dictionary. If an own _get() is implemented,
 this does not need to be the case.
 '''
 class State:
-    def __init__(self, transport: transport.Transport, ttl: int = 30):
-        self._transport = transport
+    # TODO set default TTL in child classes
+    def __init__(self, endpoint_info: dict, ttl: int = 30, **kwargs):
         self._ttl = ttl
+        self._endpoint_info = endpoint_info
 
         self._data = {}
         self._last_collected = 0
+
+        self._init(**kwargs)
+
+    def _init(self):
+        pass
 
     def _collect(self):
         raise NotImplemented
@@ -62,10 +70,7 @@ class State:
         self._last_collected = time.time()
 
 class UserSessionState(State):
-    def __init__(self, transport: transport.SshTransport, ttl: int = 30):
-        super().__init__(transport, ttl)
-
-        # this is not needed. it's here to shut up pylint
+    def _init(self, transport: transport.SshTransport):
         self._transport = transport
 
     def _get(self, key: str):
@@ -92,15 +97,13 @@ class UserSessionState(State):
             self._data[name] += 1
 
 class LinuxMemoryState(State):
-    def __init__(self, transport: transport.SshTransport, ttl: int = 60):
-        super().__init__(transport, ttl)
-
-        # this is not needed. it's here to shut up pylint
+    def _init(self, transport: transport.SshTransport):
         self._transport = transport
 
     def _collect(self):
         mem_data = self._transport.execHandleStderror('cat /proc/meminfo').decode('utf-8')
 
+        # TODO We prbly don't wan't raw values. Process them!
         self._data['mem'] = {}
         for l in mem_data.splitlines():
             arr = l.split()
@@ -112,10 +115,7 @@ class LinuxMemoryState(State):
             logger.debug(f'Memory: {key} = {val}')
 
 class LinuxLoadState(State):
-    def __init__(self, transport: transport.SshTransport, ttl: int = 30):
-        super().__init__(transport, ttl)
-
-        # this is not needed. it's here to shut up pylint
+    def _init(self, transport: transport.SshTransport):
         self._transport = transport
 
     def _collect(self):

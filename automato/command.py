@@ -13,20 +13,25 @@ MUST implement:
   execute(self, **kwargs)
 
 CAN implement:
-  __init__(self, transport)
+  _init(self, ...)
 
 SHOULDNT implement:
-  ./.
+  __init__(self, endpoint_info: dict, **kwargs):
 '''
 class Command:
-    def __init__(self, transport: transport.Transport):
+    # TODO do we need config for commands?
+    def __init__(self, endpoint_info: dict, **kwargs):
+        self._endpoint_info = endpoint_info
+        self._init(**kwargs)
+
+    def _init(self, transport: transport.Transport):
         self._transport = transport
 
     def execute(self, **kwargs):
         raise NotImplemented
 
 class NotifyCommand(Command):
-    def __init__(self, transport: transport.SshTransport):
+    def _init(self, transport: transport.SshTransport):
         self._transport = transport
 
     def execute(self, msg: str):
@@ -40,7 +45,7 @@ MAC Address in the standard XX:XX:XX:XX:XX:XX format.
 '''
 class WakeOnLanCommand(Command):
 
-    def __init__(self, transport: transport.MetaDataTransport):
+    def _init(self, transport: transport.MetaDataTransport):
         self._transport = transport
 
     def execute(self):

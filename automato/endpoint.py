@@ -11,10 +11,12 @@ def import_class(cl):
 
     # Master object
 class Endpoint:
-    def __init__(self, name, config):
+    def __init__(self, name: str, config: dict):
         transports = {}
         commands = {}
         states = {}
+
+        endpoint_info = config.get('info', {})
 
         # sweet mother of jesus, you are ugly
         for tp_key in config['transports']:
@@ -25,7 +27,7 @@ class Endpoint:
             tp_class = import_class(tp_cfg['class'])
             del tp_cfg['class']
 
-            transports[tp_key] = tp_class(**tp_cfg)
+            transports[tp_key] = tp_class(endpoint_info, **tp_cfg)
 
         for cmd_key in config['commands']:
             cmd_cfg = config['commands'][cmd_key]
@@ -35,15 +37,17 @@ class Endpoint:
             cmd_class = import_class(cmd_cfg['class'])
             del cmd_cfg['class']
 
-            if cmd_cfg['transport'] not in transports:
-                # TODO should we be lenient with errors?
-                logger.error(f'transport "{cmd_cfg["transport"]}" for command "{cmd_key}" was not found.')
-                continue
+            if 'transport' in cmd_cfg:
+                if cmd_cfg['transport'] not in transports:
+                    # TODO should we be lenient with errors?
+                    logger.error(f'transport "{cmd_cfg["transport"]}" for command "{cmd_key}" was not found.')
+                    continue
 
-            tp = transports[cmd_cfg['transport']]
-            del cmd_cfg['transport']
+                tp = transports[cmd_cfg['transport']]
+                del cmd_cfg['transport']
+                cmd_cfg['transport'] = tp
 
-            commands[cmd_key] = cmd_class(tp, **cmd_cfg)
+            commands[cmd_key] = cmd_class(endpoint_info, **cmd_cfg)
 
         # you look familiar
         for stt_key in config['states']:
@@ -59,10 +63,12 @@ class Endpoint:
                 logger.error(f'transport "{stt_cfg["transport"]}" for command "{stt_key}" was not found.')
                 continue
 
-            tp = transports[stt_cfg['transport']]
-            del stt_cfg['transport']
+            if 'transport' in stt_cfg:
+                tp = transports[stt_cfg['transport']]
+                del stt_cfg['transport']
+                stt_cfg['transport'] = tp
 
-            states[stt_key] = stt_class(tp, **stt_cfg)
+            states[stt_key] = stt_class(endpoint_info, **stt_cfg)
 
         # TODO How does the init step look like? Do it here?
         # transports prbly need to be connected here
@@ -102,6 +108,7 @@ class Endpoint:
 
     def executeCommand(self, cmd: str, **kwargs):
         if cmd not in self._commands:
-            raise Exception(f'Command "{cmd}" is not defined for "{self._name}"')
+            logger.error(f'Command "{cmd}" is not defined for "{self._name}"')
+            #raise Exception(f'Command "{cmd}" is not defined for "{self._name}"')
 
         self._commands[cmd].execute(**kwargs)
