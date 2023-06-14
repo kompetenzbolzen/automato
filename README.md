@@ -9,6 +9,9 @@ Object to group *States*, *Commands* and *Transports*.
 Endpoints can be seen as a *Transport Domain*, commands and states can only use the ones of their endpoint.
 In most cases this would be a logical host, like a Raspberry, PC or VM.
 
+Generic info about an endpoint (hostname, ip, credentials, ...) can be set in the `info` field.
+They can be used by *States*, *Commands* and *Transports*.
+
 #### State
 
 A (numeric) value, or set of values, describing the current state of an *endpoint*.
@@ -54,6 +57,9 @@ automato is configured in three `yml`-files
 `endpoints.yml`
 ```yaml
 host1:
+  info:
+    hostname: 'localhost'
+    mac:00:00:00:00:00
   transports:
     ssh:
       class: automato.transport.SshTransport
