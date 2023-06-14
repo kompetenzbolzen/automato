@@ -44,20 +44,22 @@ Transport: MetaDataTransport with attribute 'mac' set to the devices'
 MAC Address in the standard XX:XX:XX:XX:XX:XX format.
 '''
 class WakeOnLanCommand(Command):
+    def _init(self):
+        if not 'mac' in self._endpoint_info:
+            logger.error('MAC Address is not set in endpoint info.')
 
-    def _init(self, transport: transport.MetaDataTransport):
-        self._transport = transport
+        self._mac = self._endpoint_info.get('mac', "00:00:00:00:00")
 
     def execute(self):
         mac_bytes = b''
         try:
-            mac_bytes = binascii.unhexlify(self._transport.mac.replace(':',''))
+            mac_bytes = binascii.unhexlify(self._mac.replace(':',''))
         except binascii.Error:
-            logger.error(f'MAC Address "{self._transport.mac}" failed to parse to binary')
+            logger.error(f'MAC Address "{self._mac}" failed to parse to binary')
             return
 
         if len(mac_bytes) != 6:
-            logger.error(f'MAC Address "{self._transport.mac}" is malformed')
+            logger.error(f'MAC Address "{self._mac}" is malformed')
             return
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -66,4 +68,4 @@ class WakeOnLanCommand(Command):
         magic = b'\xff' * 6 + mac_bytes * 16
         s.sendto(magic, ('<broadcast>', 7))
 
-        logger.debug(f'Sent magic packet to {self._transport.mac}')
+        logger.debug(f'Sent magic packet to {self._mac}')
