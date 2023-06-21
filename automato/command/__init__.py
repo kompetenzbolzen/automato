@@ -1,4 +1,4 @@
-from . import transport
+from automato import transport
 
 import logging
 
