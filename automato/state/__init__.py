@@ -2,7 +2,7 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
-from . import transport
+from automato import transport
 
 '''
 Implementations of State:

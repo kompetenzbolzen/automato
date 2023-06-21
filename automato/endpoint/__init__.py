@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from . import transport
+from automato import transport
 
 def import_class(cl):
     d = cl.rfind(".")

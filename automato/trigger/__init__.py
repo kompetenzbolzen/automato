@@ -4,8 +4,10 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
-from . import endpoint
-from . import misc
+from automato import endpoint
+from automato import misc
+
+
 
 '''
 Implementations of Trigger:
