@@ -1,20 +1,19 @@
 host1:
+  info:
+    hostname: 'localhost'
+    mac: 90:1b:0e:4a:d8:1b
   transports:
     ssh:
       class: automato.transport.SshTransport
       hostname: 'localhost'
       username: 'jonas'
       allow_agent: True
-    meta:
-      class: automato.transport.MetaDataTransport
-      mac: 00:00:00:00:00:00
   commands:
     notify:
       class: automato.command.NotifyCommand
       transport: ssh
     wol:
       class: automato.command.WakeOnLanCommand
-      transport: meta
   states:
     user:
       class: automato.state.UserSessionState
