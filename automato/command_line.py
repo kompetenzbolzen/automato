@@ -17,6 +17,7 @@ def setup():
                         datefmt='%c')
 
     logging.getLogger('paramiko').setLevel(logging.WARNING)
+    logging.getLogger('urllib3').setLevel(logging.WARNING)
 
     endpoint_config = load_yaml('endpoints.yml')
     trigger_config = load_yaml('triggers.yml')
