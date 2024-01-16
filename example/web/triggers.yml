@@ -1,0 +1,2 @@
+conditional:
+  class: automato.trigger.ConditionalTrigger

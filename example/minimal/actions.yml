@@ -1,0 +1,8 @@
+---
+example:
+  trigger:
+    - conditional:
+        interval: 10
+        when:
+          - True
+  then: []

@@ -1,0 +1,17 @@
+localhost:
+  info: {}
+  transports:
+    web:
+      class: automato.transport.http.HttpTransport
+      address: http://localhost:8000
+  commands:
+    get:
+      class: automato.command.http.HttpCommand
+      transport: web
+  states:
+    jsondata:
+      class: automato.state.http.HttpJsonState
+      transport: web
+      path: data.json
+      method: GET
+

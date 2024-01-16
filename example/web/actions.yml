@@ -1,0 +1,13 @@
+---
+example:
+  trigger:
+    - conditional:
+        interval: 10
+        when:
+          - localhost.jsondata.value1 == 42
+          - localhost.jsondata.dict.value3
+  then:
+    - localhost.get:
+        method: GET
+        path: /
+

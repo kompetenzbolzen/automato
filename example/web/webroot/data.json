@@ -1,0 +1,7 @@
+{
+	"value1": 42,
+	"dict": {
+		"value2": "test",
+		"value3": true
+	}
+}
