@@ -11,8 +11,8 @@ MUST implement:
   _collect(self)
 
 CAN implement:
+  _init(self, [transport], <other options you might need>)
   _get(self, key: str)
-  init(self, [transport], <other options you might need>)
 
 SHOULDNT implement:
   get(self, key)
