@@ -35,13 +35,13 @@ class HttpTransport(Transport):
         # TODO Here we could maybe also perform a more complex login
         # with Cookies?
 
-        ret = self._request('HEAD', self._validation_path)
+        ret = self.request('HEAD', self._validation_path)
         logger.debug(f'{self._validation_path} checked {ret.ok} with code {ret.status_code}')
 
         return ret.ok
 
 
-    def _request(self, method:str, path:str, headers:[None,dict] = None,
+    def request(self, method:str, path:str, headers:[None,dict] = None,
                  data = None, params:[None,str] = None):
         full_path = self._address.rstrip('/') + '/' + path.lstrip('/')
         logger.debug(f'requested {method} for {full_path}')
@@ -66,14 +66,14 @@ class HttpTransport(Transport):
 
 
     def get(self, **kwargs):
-        return self._request('GET', **kwargs)
+        return self.request('GET', **kwargs)
     def head(self, **kwargs):
-        return self._request('HEAD', **kwargs)
+        return self.request('HEAD', **kwargs)
     def put(self, **kwargs):
-        return self._request('PUT', **kwargs)
+        return self.request('PUT', **kwargs)
     def post(self, **kwargs):
-        return self._request('POST', **kwargs)
+        return self.request('POST', **kwargs)
     def patch(self, **kwargs):
-        return self._request('PATCH', **kwargs)
+        return self.request('PATCH', **kwargs)
     def delete(self, **kwargs):
-        return self._request('DELETE', **kwargs)
+        return self.request('DELETE', **kwargs)

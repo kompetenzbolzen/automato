@@ -13,7 +13,7 @@ MUST implement:
   execute(self, **kwargs)
 
 CAN implement:
-  _init(self, ...)
+  _init(self, transport, ...)
 
 SHOULDNT implement:
   __init__(self, endpoint_info: dict, **kwargs):
